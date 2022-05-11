@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/Checkbox";
 import { SubTitle } from "@/components/SubTitle";
 import { PopulationRepository } from "@/repositories/populationRepository";
 import { RepositoryFactory } from "@/repositories/repositoryFactory";
+import "@/App.css";
 
 function App() {
   const { getPrefectures, getPopulation } = RepositoryFactory.get(
@@ -31,7 +32,7 @@ function App() {
   // console.log(populations);
 
   return (
-    <div>
+    <div className="App">
       <SubTitle title="都道府県" />
       <Checkbox items={prefectures} />
 
