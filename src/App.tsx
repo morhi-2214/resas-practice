@@ -32,9 +32,7 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <Checkbox items={prefectures} />
-      </header>
+      <Checkbox items={prefectures} />
     </div>
   );
 }

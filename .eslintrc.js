@@ -17,12 +17,11 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
-  plugins: ["react", "@typescript-eslint", "import", "unused-imports"],
+  plugins: ["react", "@typescript-eslint", "import"],
   rules: {
     "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-unused-vars": "off",
-    "unused-imports/no-unused-imports": "warn",
     // eslint-plugin-importのimport順の設定
     "import/order": [
       "warn",
