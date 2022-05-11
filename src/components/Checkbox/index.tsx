@@ -7,7 +7,7 @@ type Props = {
 };
 
 const Checkbox: FC<Props> = ({ items, name = "", disabled = false }) => {
-  console.log(items);
+  //   console.log(items);
   return (
     <>
       {items.map((item: any, i: any) => {
