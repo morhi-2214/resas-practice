@@ -13,7 +13,7 @@ import { Prefecture, Population } from "@/pages/Home";
 
 type Props = {
   data: any;
-  labels: any;
+  labels: Prefecture[];
 };
 
 const Chart: FC<Props> = ({ data, labels }) => {
