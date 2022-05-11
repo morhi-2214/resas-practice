@@ -16,9 +16,9 @@ export const usePopulationRepository = () => {
    * 指定の都道府県の人口構成を取得する
    * TODO: クエリパラメータの部分は後で渡せるようにする
    **/
-  const getPopulation = async () => {
+  const getPopulation = async (prefCode: number) => {
     const { data } = await Repository.get(
-      `${resource}/population/composition/perYear?prefCode=11&cityCode=11362`
+      `${resource}/population/composition/perYear?prefCode=${prefCode}&cityCode=-`
     );
     return data;
   };
