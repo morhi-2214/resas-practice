@@ -1,27 +1,25 @@
 import { FC } from "react";
 
+import { Prefecture } from "@/pages/Home";
+
 type Props = {
-  name?: string;
-  items: any;
-  disabled?: boolean;
+  items: Prefecture[];
 };
 
-const Checkbox: FC<Props> = ({ items, name = "", disabled = false }) => {
-  //   console.log(items);
+const Checkbox: FC<Props> = ({ items }) => {
   return (
     <>
-      {items.map((item: any, i: any) => {
+      {items.map((item, i) => {
         return (
           <div key={i}>
             <input
-              id={name}
+              id={item.prefName}
               type="checkbox"
               name={item.prefName}
-              value={item.prefName}
-              checked={item.checked}
-              disabled={disabled}
+              value={item.prefCode}
+              // checked={item.checked}
             />
-            <label htmlFor={name}>{item.prefName}</label>
+            <label htmlFor={item.prefName}>{item.prefName}</label>
           </div>
         );
       })}

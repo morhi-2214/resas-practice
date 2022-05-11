@@ -1,45 +1,89 @@
+import { union } from "lodash";
 import { useState, useEffect } from "react";
 
 import { Chart } from "@/components/Chart";
 import { Checkbox } from "@/components/Checkbox";
 import { SubTitle } from "@/components/SubTitle";
+import _populations from "@/mocks/populations";
 import _prefectures from "@/mocks/prefectures";
 import { PopulationRepository } from "@/repositories/populationRepository";
 import { RepositoryFactory } from "@/repositories/repositoryFactory";
+
+export type Prefecture = {
+  prefCode: number;
+  prefName: string;
+};
+
+export type Population = {
+  year: number;
+  value: number;
+};
 
 function App() {
   const { getPrefectures, getPopulation } = RepositoryFactory.get(
     "population"
   ) as PopulationRepository;
 
-  const [prefectures, setPrefectures] = useState<any>(_prefectures.result);
-  const [populations, setPopulation] = useState<any>([]);
+  const [prefectures, setPrefectures] = useState<Prefecture[]>([]);
+  const [selectedPrefectures, setSelectedPrefectures] = useState<Prefecture[]>(
+    []
+  );
+  const [populations, setPopulation] = useState<Population[]>([]);
 
-  // useEffect(() => {
-  // APIのリクエスト制限があるので暫定でコメントアウト
-  // getPrefectures()
-  //   .then((res) => {
-  //     setPrefectures(res.result);
-  //   })
-  //   .catch((err) => console.log("error", err));
-  // }, []);
+  // 選択されたチェックボックスのvalueを取得
+  const prefCodes = [12, 13];
 
-  // const prefCodes = [12, 13];
+  useEffect(() => {
+    getPrefectures()
+      .then((res) => {
+        setPrefectures(res.result);
+      })
+      .catch((err) => console.log("error", err));
 
-  // useEffect(() => {
-  //   const stories: any = [];
-  //   prefCodes.forEach((prefCode) => {
-  //     getPopulation(prefCode)
-  //       .then((res) => {
-  //         stories.push(res.result.data[0].data);
-  //       })
-  //       .catch((err) => console.log("error", err));
-  //   });
-  //   setPopulation(stories);
-  // }, [prefCodes]);
+    const stories: any = [];
+    const prefLabels: any = [];
 
-  console.log(prefectures);
+    prefCodes.forEach((prefCode) => {
+      getPopulation(prefCode).then((res) => {
+        // 指定されたprefCodeの都道府県を取得
+        const targetPref = _prefectures.find(
+          (prefecture) => prefecture.prefCode === prefCode
+        );
+        prefLabels.push(targetPref);
+
+        /**
+         * 集計年を10年ごとに統一
+         */
+        if (targetPref) {
+          const formatted = res.result.data[0].data
+            .filter((item: Population) => item.year % 10 === 0)
+            .map((item: Population) => {
+              return { year: item.year, [targetPref?.prefName]: item.value };
+            });
+          stories.push(...formatted);
+        }
+
+        // 人口構成のデータに含まれる集計年のリスト
+        const yearsList = Array.from(
+          new Set(stories.map((story: Population) => story.year))
+        );
+
+        // rechartsに渡せる形にフォーマット
+        const merged = yearsList.map((year) => {
+          return Object.assign(
+            {},
+            ...stories.filter((item: any) => item.year === year)
+          );
+        });
+        setPopulation(merged);
+        setSelectedPrefectures(prefLabels);
+      });
+    });
+  }, []);
+
+  // console.log(prefectures);
   // console.log(populations);
+  // console.log(selectedPrefectures);
 
   return (
     <div>
@@ -47,7 +91,7 @@ function App() {
       <Checkbox items={prefectures} />
 
       <SubTitle title="人口数" />
-      {/* <Chart /> */}
+      <Chart data={populations} labels={selectedPrefectures} />
     </div>
   );
 }
