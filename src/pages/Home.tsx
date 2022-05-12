@@ -1,4 +1,3 @@
-import { union } from "lodash";
 import { useState, useEffect } from "react";
 
 import { Chart } from "@/components/Chart";

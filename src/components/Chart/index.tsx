@@ -9,7 +9,7 @@ import {
   Legend,
 } from "recharts";
 
-import { Prefecture, Population } from "@/pages/Home";
+import { Prefecture } from "@/pages/Home";
 
 type Props = {
   data: any;
