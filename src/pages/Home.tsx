@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import useSWR from "swr";
 
 import { Chart } from "@/components/Chart";
 import { Checkbox } from "@/components/Checkbox";
@@ -30,55 +31,64 @@ function App() {
   const [populations, setPopulation] = useState<Population[]>([]);
 
   // 選択されたチェックボックスのvalueを取得
-  const prefCodes = [12, 13];
+  const prefCodes = [12, 14];
 
-  useEffect(() => {
-    getPrefectures()
-      .then((res) => {
-        setPrefectures(res.result);
-      })
-      .catch((err) => console.log("error", err));
+  const { data: prefecturesData } = useSWR("/prefectures", getPrefectures);
 
-    const stories: any = [];
-    const prefLabels: any = [];
+  prefCodes.forEach((prefCode) => {
+    const { data: populationsData } = useSWR(
+      `prefCode=${prefCode}&cityCode=-`,
+      getPopulation
+    );
+  });
 
-    prefCodes.forEach((prefCode) => {
-      getPopulation(prefCode).then((res) => {
-        // 指定されたprefCodeの都道府県を取得
-        const targetPref = _prefectures.find(
-          (prefecture) => prefecture.prefCode === prefCode
-        );
-        prefLabels.push(targetPref);
+  // useEffect(() => {
+  //   getPrefectures()
+  //     .then((res) => {
+  //       setPrefectures(res.result);
+  //     })
+  //     .catch((err) => console.log("error", err));
 
-        /**
-         * 集計年を10年ごとに統一
-         */
-        if (targetPref) {
-          const formatted = res.result.data[0].data
-            .filter((item: Population) => item.year % 10 === 0)
-            .map((item: Population) => {
-              return { year: item.year, [targetPref?.prefName]: item.value };
-            });
-          stories.push(...formatted);
-        }
+  //   const stories: any = [];
+  //   const prefLabels: any = [];
 
-        // 人口構成のデータに含まれる集計年のリスト
-        const yearsList = Array.from(
-          new Set(stories.map((story: Population) => story.year))
-        );
+  //   prefCodes.forEach((prefCode) => {
+  //     getPopulation(prefCode).then((res) => {
+  //       // 指定されたprefCodeの都道府県を取得
+  //       const targetPref = _prefectures.find(
+  //         (prefecture) => prefecture.prefCode === prefCode
+  //       );
+  //       prefLabels.push(targetPref);
 
-        // rechartsに渡せる形にフォーマット
-        const merged = yearsList.map((year) => {
-          return Object.assign(
-            {},
-            ...stories.filter((item: any) => item.year === year)
-          );
-        });
-        setPopulation(merged);
-        setSelectedPrefectures(prefLabels);
-      });
-    });
-  }, []);
+  //       /**
+  //        * 集計年を10年ごとに統一
+  //        */
+  //       if (targetPref) {
+  //         const formatted = res.result.data[0].data
+  //           .filter((item: Population) => item.year % 10 === 0)
+  //           .map((item: Population) => {
+  //             return { year: item.year, [targetPref?.prefName]: item.value };
+  //           });
+  //         stories.push(...formatted);
+  //       }
+
+  //       // 人口構成のデータに含まれる集計年のリスト
+  //       const yearsList = Array.from(
+  //         new Set(stories.map((story: Population) => story.year))
+  //       );
+
+  //       // rechartsに渡せる形にフォーマット
+  //       const merged = yearsList.map((year) => {
+  //         return Object.assign(
+  //           {},
+  //           ...stories.filter((item: any) => item.year === year)
+  //         );
+  //       });
+  //       setPopulation(merged);
+  //       setSelectedPrefectures(prefLabels);
+  //     });
+  //   });
+  // }, []);
 
   // console.log(prefectures);
   // console.log(populations);
