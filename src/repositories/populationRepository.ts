@@ -16,14 +16,14 @@ export const usePopulationRepository = () => {
    * 指定の都道府県の人口構成を取得する
    * TODO: クエリパラメータの部分は後で渡せるようにする
    **/
-  const getPopulation = async (query: string) => {
+  const getPopulations = async (query: string) => {
     const { data } = await Repository.get(
-      `${resource}/population/composition?${query}`
+      `${resource}/population/composition/perYear?${query}`
     );
     return data;
   };
 
-  return { getPrefectures, getPopulation };
+  return { getPrefectures, getPopulations };
 };
 
 export type PopulationRepository = ReturnType<typeof usePopulationRepository>;

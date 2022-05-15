@@ -6,6 +6,7 @@ const prefectures = [
   {
     prefCode: 2,
     prefName: "青森県",
+    checked: true,
   },
   {
     prefCode: 3,
