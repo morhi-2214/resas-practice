@@ -32,7 +32,7 @@ const Home = () => {
   const { data: prefecturesData } = useSWR("/prefectures", getPrefectures);
   const prefectures = useCheckbox(prefecturesData?.result);
 
-  // 選択されたチェックボックスのvalueを取得
+  // 選択されたチェックボックスのvalue(prefCode)を取得
   const checked = useMemo(
     () => prefectures.checkedValue,
     [prefectures.checkedValue]
@@ -47,12 +47,12 @@ const Home = () => {
     // TODO: なぜかpopulationsDataがundefinedでも走ってしまうので修正！
     console.log(populationsData);
 
-    setPopulations(formatDataListForRechart(populationsData?.stories));
-    setSelectedPrefectures(populationsData?.prefLabels);
+    setPopulations(formatDataListForRechart(populationsData?.dataset));
+    setSelectedPrefectures(populationsData?.checkedPrefectures);
   }, [populationsData]);
 
   return (
-    <div>
+    <>
       <SubTitle title="都道府県" />
       {prefectures && (
         <Checkbox items={prefectures.items} onChange={prefectures.set} />
@@ -60,7 +60,7 @@ const Home = () => {
 
       <SubTitle title="人口数" />
       <Chart data={populations} labels={selectedPrefectures} />
-    </div>
+    </>
   );
 };
 

@@ -1,10 +1,12 @@
 import { FC } from "react";
 
+import { styles } from "./Checkbox.css";
+
 import { Prefecture } from "@/pages/Home";
 
 type Props = {
-  items: Prefecture[] | undefined;
-  onChange?: (items: Prefecture[] | undefined) => void;
+  items?: Prefecture[];
+  onChange: (items: Prefecture[] | undefined) => void;
 };
 
 const Checkbox: FC<Props> = ({
@@ -22,7 +24,7 @@ const Checkbox: FC<Props> = ({
   };
 
   return (
-    <>
+    <div className={styles.wrapper}>
       {items?.map((item, i) => {
         return (
           <div key={i}>
@@ -38,7 +40,7 @@ const Checkbox: FC<Props> = ({
           </div>
         );
       })}
-    </>
+    </div>
   );
 };
 

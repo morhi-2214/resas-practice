@@ -19,29 +19,34 @@ export const usePopulationRepository = () => {
    * 指定の都道府県の人口構成を取得する
    **/
   const getPopulations = async (
-    checked: number[],
-    prefectures: Prefecture[]
+    checkedPrefCodes: number[],
+    prefecturesList: Prefecture[]
   ) => {
-    const stories: any = [];
-    const prefLabels: any[] = [];
+    const dataset: any = [];
+    const checkedPrefectures: Prefecture[] = [];
 
-    checked.forEach(async (prefCode) => {
+    checkedPrefCodes.forEach(async (code) => {
       const { data } = await Repository.get(
-        `${resource}/population/composition/perYear?prefCode=${prefCode}&cityCode=-`
+        `${resource}/population/composition/perYear?prefCode=${code}&cityCode=-`
       );
 
-      // 指定されたprefCodeの都道府県を取得
-      const targetPref = prefectures.find(
-        (prefecture) => prefecture.prefCode === prefCode
+      // 指定されたprefCodeの都道府県名を取得
+      const checkedPrefecture = prefecturesList.find(
+        (prefecture) => prefecture.prefCode === code
       );
 
-      prefLabels.push(targetPref);
-      stories.push(
-        formatSinglePopulationData(data.result.data[0].data, targetPref)
-      );
+      if (checkedPrefecture) {
+        checkedPrefectures.push(checkedPrefecture);
+        dataset.push(
+          formatSinglePopulationData(
+            data.result.data[0].data,
+            checkedPrefecture
+          )
+        );
+      }
     });
 
-    return { stories, prefLabels };
+    return { dataset, checkedPrefectures };
   };
 
   return { getPrefectures, getPopulations };
