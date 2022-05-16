@@ -27,16 +27,19 @@ const Checkbox: FC<Props> = ({
     <div className={styles.wrapper}>
       {items?.map((item, i) => {
         return (
-          <div key={i}>
+          <div key={i} className={styles.unit}>
             <input
               id={item.prefName}
               type="checkbox"
+              className={styles.input}
               name={item.prefName}
               value={item.prefCode}
               onChange={() => handleChange(i)}
               checked={item.checked}
             />
-            <label htmlFor={item.prefName}>{item.prefName}</label>
+            <label className={styles.label} htmlFor={item.prefName}>
+              {item.prefName}
+            </label>
           </div>
         );
       })}
