@@ -1,14 +1,10 @@
 import { FC } from "react";
 
-export type Item = {
-  prefName: string;
-  prefCode: number;
-  checked?: boolean;
-};
+import { Prefecture } from "@/pages/Home";
 
 type Props = {
-  items: Item[];
-  onChange?: (items: Item[]) => void;
+  items: Prefecture[] | undefined;
+  onChange?: (items: Prefecture[] | undefined) => void;
 };
 
 const Checkbox: FC<Props> = ({
@@ -19,7 +15,7 @@ const Checkbox: FC<Props> = ({
 }) => {
   const handleChange = (index: number) => {
     //操作されたチェックボックスの `checked` を反転
-    const _items = items.map((item, i) =>
+    const _items = items?.map((item, i) =>
       i === index ? { ...item, checked: !item.checked } : item
     );
     onChange(_items);
@@ -27,7 +23,7 @@ const Checkbox: FC<Props> = ({
 
   return (
     <>
-      {items.map((item, i) => {
+      {items?.map((item, i) => {
         return (
           <div key={i}>
             <input

@@ -1,5 +1,6 @@
 import { useApiClient } from "../hooks/useApiClient";
 
+import { Prefecture } from "@/pages/Home";
 import { formatSinglePopulationData } from "@/utils/formatData";
 
 const resource = "";
@@ -16,9 +17,11 @@ export const usePopulationRepository = () => {
 
   /**
    * 指定の都道府県の人口構成を取得する
-   * TODO: クエリパラメータの部分は後で渡せるようにする
    **/
-  const getPopulations = async (checked: number[], _prefectures: any) => {
+  const getPopulations = async (
+    checked: number[],
+    prefectures: Prefecture[]
+  ) => {
     const stories: any = [];
     const prefLabels: any[] = [];
 
@@ -28,8 +31,8 @@ export const usePopulationRepository = () => {
       );
 
       // 指定されたprefCodeの都道府県を取得
-      const targetPref = _prefectures.find(
-        (prefecture: any) => prefecture.prefCode === prefCode
+      const targetPref = prefectures.find(
+        (prefecture) => prefecture.prefCode === prefCode
       );
 
       prefLabels.push(targetPref);

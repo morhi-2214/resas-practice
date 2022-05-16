@@ -13,7 +13,7 @@ import { Prefecture } from "@/pages/Home";
 
 type Props = {
   data: any;
-  labels: Prefecture[];
+  labels: Prefecture[] | undefined;
 };
 
 const Chart: FC<Props> = ({ data, labels }) => {
@@ -34,14 +34,15 @@ const Chart: FC<Props> = ({ data, labels }) => {
       <YAxis />
       <Tooltip />
       <Legend />
-      {labels.map((label, i) => (
-        <Line
-          key={i}
-          type="monotone"
-          dataKey={label.prefName}
-          stroke="#82ca9d"
-        />
-      ))}
+      {labels &&
+        labels.map((label, i) => (
+          <Line
+            key={i}
+            type="monotone"
+            dataKey={label.prefName}
+            stroke="#82ca9d"
+          />
+        ))}
     </LineChart>
   );
 };

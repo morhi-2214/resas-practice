@@ -1,18 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import useSWR from "swr";
 
 import { Chart } from "@/components/Chart";
 import { Checkbox } from "@/components/Checkbox";
 import { SubTitle } from "@/components/SubTitle";
 import { useCheckbox } from "@/hooks/useCheckbox";
-import _populations from "@/mocks/populations";
-import _prefectures from "@/mocks/prefectures";
 import { PopulationRepository } from "@/repositories/populationRepository";
 import { RepositoryFactory } from "@/repositories/repositoryFactory";
-import {
-  formatSinglePopulationData,
-  formatDataListForRechart,
-} from "@/utils/formatData";
+import { formatDataListForRechart } from "@/utils/formatData";
 
 export type Prefecture = {
   prefCode: number;
@@ -29,36 +24,39 @@ const Home = () => {
   const { getPrefectures, getPopulations } = RepositoryFactory.get(
     "population"
   ) as PopulationRepository;
-  // const [prefectures, setPrefectures] = useState<Prefecture[]>([]);
   const [populations, setPopulations] = useState<Population[]>([]);
-  const [selectedPrefectures, setSelectedPrefectures] = useState<Prefecture[]>(
-    []
-  );
+  const [selectedPrefectures, setSelectedPrefectures] = useState<
+    Prefecture[] | undefined
+  >([]);
 
   const { data: prefecturesData } = useSWR("/prefectures", getPrefectures);
-  // const prefectures = useCheckbox(prefecturesData.result);
-  const prefectures = useCheckbox(_prefectures);
+  const prefectures = useCheckbox(prefecturesData?.result);
 
   // 選択されたチェックボックスのvalueを取得
-  const checked = [12, 16];
-  // const checked = prefectures.checkedValue;
+  const checked = useMemo(
+    () => prefectures.checkedValue,
+    [prefectures.checkedValue]
+  );
 
   const { data: populationsData } = useSWR(
-    [checked, _prefectures],
+    [checked, prefectures.items],
     getPopulations
   );
 
   useEffect(() => {
-    if (populationsData?.stories.length && populationsData.prefLabels.length) {
-      setPopulations(formatDataListForRechart(populationsData?.stories.flat()));
-      setSelectedPrefectures(populationsData?.prefLabels);
-    }
-  }, [populationsData?.stories.length, populationsData?.prefLabels.length]);
+    // TODO: なぜかpopulationsDataがundefinedでも走ってしまうので修正！
+    console.log(populationsData);
+
+    setPopulations(formatDataListForRechart(populationsData?.stories));
+    setSelectedPrefectures(populationsData?.prefLabels);
+  }, [populationsData]);
 
   return (
     <div>
       <SubTitle title="都道府県" />
-      <Checkbox items={prefectures.items} onChange={prefectures.set} />
+      {prefectures && (
+        <Checkbox items={prefectures.items} onChange={prefectures.set} />
+      )}
 
       <SubTitle title="人口数" />
       <Chart data={populations} labels={selectedPrefectures} />
