@@ -35,49 +35,25 @@ const Home = () => {
     []
   );
 
-  const { data: prefecturesData, error } = useSWR(
-    "/prefectures",
-    getPrefectures
-  );
-
+  const { data: prefecturesData } = useSWR("/prefectures", getPrefectures);
   // const prefectures = useCheckbox(prefecturesData.result);
   const prefectures = useCheckbox(_prefectures);
 
   // 選択されたチェックボックスのvalueを取得
-  const checked = [12, 14];
+  const checked = [12, 16];
   // const checked = prefectures.checkedValue;
 
-  const stories: any = [];
-  const prefLabels: Prefecture[] = [];
-
-  checked.forEach((prefCode) => {
-    const { data: populationData } = useSWR(
-      `prefCode=${prefCode}&cityCode=-`,
-      getPopulations
-    );
-
-    // 指定されたprefCodeの都道府県を取得;
-    const targetPref = _prefectures.find(
-      (prefecture) => prefecture.prefCode === prefCode
-    );
-
-    if (populationData) {
-      prefLabels.push(targetPref);
-      stories.push(
-        formatSinglePopulationData(
-          populationData.result.data[0].data,
-          targetPref
-        )
-      );
-    }
-  });
+  const { data: populationsData } = useSWR(
+    [checked, _prefectures],
+    getPopulations
+  );
 
   useEffect(() => {
-    setPopulations(formatDataListForRechart(stories));
-    setSelectedPrefectures(prefLabels);
-  }, [stories.length]);
-
-  // console.log(formatDataListForRechart(stories));
+    if (populationsData?.stories.length && populationsData.prefLabels.length) {
+      setPopulations(formatDataListForRechart(populationsData?.stories.flat()));
+      setSelectedPrefectures(populationsData?.prefLabels);
+    }
+  }, [populationsData?.stories.length, populationsData?.prefLabels.length]);
 
   return (
     <div>
