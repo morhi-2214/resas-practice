@@ -1,44 +1,69 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import useSWR from "swr";
 
+import { Chart } from "@/components/Chart";
 import { Checkbox } from "@/components/Checkbox";
 import { SubTitle } from "@/components/SubTitle";
+import { useCheckbox } from "@/hooks/useCheckbox";
 import { PopulationRepository } from "@/repositories/populationRepository";
 import { RepositoryFactory } from "@/repositories/repositoryFactory";
-import "@/App.css";
+import { formatDataListForRechart } from "@/utils/formatData";
 
-function App() {
-  const { getPrefectures, getPopulation } = RepositoryFactory.get(
+export type Prefecture = {
+  prefCode: number;
+  prefName: string;
+  checked?: boolean;
+};
+
+export type Population = {
+  year: number;
+  value: number;
+};
+
+const Home = () => {
+  const { getPrefectures, getPopulations } = RepositoryFactory.get(
     "population"
   ) as PopulationRepository;
+  const [populations, setPopulations] = useState<Population[]>([]);
+  const [checkedPrefectures, setCheckedPrefectures] = useState<
+    Prefecture[] | undefined
+  >([]);
 
-  const [prefectures, setPrefectures] = useState<any>([]);
-  const [populations, setPopulation] = useState<any>([]);
+  const { data: prefecturesData } = useSWR("/prefectures", getPrefectures);
+  const prefectures = useCheckbox(prefecturesData?.result);
+
+  // 選択されたチェックボックスのvalue(prefCode)を取得
+  const checkedPrefCodes = useMemo(
+    () => prefectures.checkedValue,
+    [prefectures.checkedValue]
+  );
+
+  const { data: populationsData } = useSWR(
+    [checkedPrefCodes, prefectures.items],
+    getPopulations
+  );
 
   useEffect(() => {
-    getPrefectures()
-      .then((res) => {
-        setPrefectures(res.result);
-      })
-      .catch((err) => console.log("error", err));
-
-    getPopulation()
-      .then((res) => {
-        setPopulation(res.result);
-      })
-      .catch((err) => console.log("error", err));
-  }, []);
-
-  // console.log(prefectures);
-  // console.log(populations);
+    // TODO: なぜかpopulationsDataがundefinedでも走ってしまうので修正！
+    // console.log(populationsData);
+    setPopulations(formatDataListForRechart(populationsData?.dataset));
+    setCheckedPrefectures(populationsData?.checkedPrefectures);
+  }, [populationsData]);
 
   return (
-    <div className="App">
+    <>
       <SubTitle title="都道府県" />
-      <Checkbox items={prefectures} />
-
-      <SubTitle title="人口数" />
-    </div>
+      {prefectures && (
+        <Checkbox items={prefectures.items} onChange={prefectures.set} />
+      )}
+      {!!checkedPrefCodes?.length && (
+        <>
+          <SubTitle title="人口数" />
+          <Chart data={populations} labels={checkedPrefectures} />
+        </>
+      )}
+    </>
   );
-}
+};
 
-export default App;
+export default Home;

@@ -1,31 +1,49 @@
 import { FC } from "react";
 
+import { styles } from "./Checkbox.css";
+
+import { Prefecture } from "@/pages/Home";
+
 type Props = {
-  name?: string;
-  items: any;
-  disabled?: boolean;
+  items?: Prefecture[];
+  onChange: (items: Prefecture[] | undefined) => void;
 };
 
-const Checkbox: FC<Props> = ({ items, name = "", disabled = false }) => {
-  //   console.log(items);
+const Checkbox: FC<Props> = ({
+  items,
+  onChange = () => {
+    return;
+  },
+}) => {
+  const handleChange = (index: number) => {
+    //操作されたチェックボックスの `checked` を反転
+    const _items = items?.map((item, i) =>
+      i === index ? { ...item, checked: !item.checked } : item
+    );
+    onChange(_items);
+  };
+
   return (
-    <>
-      {items.map((item: any, i: any) => {
+    <div className={styles.wrapper}>
+      {items?.map((item, i) => {
         return (
-          <div key={i}>
+          <div key={i} className={styles.unit}>
             <input
-              id={name}
+              id={item.prefName}
               type="checkbox"
+              className={styles.input}
               name={item.prefName}
-              value={item.prefName}
+              value={item.prefCode}
+              onChange={() => handleChange(i)}
               checked={item.checked}
-              disabled={disabled}
             />
-            <label htmlFor={name}>{item.prefName}</label>
+            <label className={styles.label} htmlFor={item.prefName}>
+              {item.prefName}
+            </label>
           </div>
         );
       })}
-    </>
+    </div>
   );
 };
 

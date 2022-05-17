@@ -1,7 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosInstance } from "axios";
 const useApiClient = () => {
   const baseURL = import.meta.env.VITE_API_BASE_DOMAIN;
-
   const config: AxiosRequestConfig = {
     baseURL,
     headers: {
@@ -10,7 +9,7 @@ const useApiClient = () => {
   };
 
   const repository: AxiosInstance = axios.create(config);
-
   return repository;
 };
+
 export { useApiClient };
