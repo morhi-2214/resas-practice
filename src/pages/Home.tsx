@@ -25,7 +25,7 @@ const Home = () => {
     "population"
   ) as PopulationRepository;
   const [populations, setPopulations] = useState<Population[]>([]);
-  const [selectedPrefectures, setSelectedPrefectures] = useState<
+  const [checkedPrefectures, setCheckedPrefectures] = useState<
     Prefecture[] | undefined
   >([]);
 
@@ -33,25 +33,22 @@ const Home = () => {
   const prefectures = useCheckbox(prefecturesData?.result);
 
   // 選択されたチェックボックスのvalue(prefCode)を取得
-  const checked = useMemo(
+  const checkedPrefCodes = useMemo(
     () => prefectures.checkedValue,
     [prefectures.checkedValue]
   );
 
   const { data: populationsData } = useSWR(
-    [checked, prefectures.items],
+    [checkedPrefCodes, prefectures.items],
     getPopulations
   );
 
   useEffect(() => {
     // TODO: なぜかpopulationsDataがundefinedでも走ってしまうので修正！
-    // if (!populationsData) return;
-    console.log(populationsData);
+    // console.log(populationsData);
     setPopulations(formatDataListForRechart(populationsData?.dataset));
-    setSelectedPrefectures(populationsData?.checkedPrefectures);
+    setCheckedPrefectures(populationsData?.checkedPrefectures);
   }, [populationsData]);
-
-  // console.log(populations);
 
   return (
     <>
@@ -59,9 +56,12 @@ const Home = () => {
       {prefectures && (
         <Checkbox items={prefectures.items} onChange={prefectures.set} />
       )}
-
-      <SubTitle title="人口数" />
-      <Chart data={populations} labels={selectedPrefectures} />
+      {!!checkedPrefCodes?.length && (
+        <>
+          <SubTitle title="人口数" />
+          <Chart data={populations} labels={checkedPrefectures} />
+        </>
+      )}
     </>
   );
 };

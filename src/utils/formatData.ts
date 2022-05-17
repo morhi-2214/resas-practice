@@ -1,7 +1,7 @@
 import { Population, Prefecture } from "@/pages/Home";
 
 const formatSinglePopulationData = (
-  data: any,
+  data: Population[],
   targetPref: Prefecture | undefined
 ) => {
   // 集計年を10年ごとにまとめて整形
