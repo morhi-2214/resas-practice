@@ -9,6 +9,7 @@ import {
   Legend,
 } from "recharts";
 
+import colors from "@/mocks/barColors";
 import { Prefecture } from "@/pages/Home";
 
 type Props = {
@@ -19,8 +20,8 @@ type Props = {
 const Chart: FC<Props> = ({ data, labels }) => {
   return (
     <LineChart
-      width={500}
-      height={300}
+      width={900}
+      height={500}
       data={data}
       margin={{
         top: 5,
@@ -40,7 +41,7 @@ const Chart: FC<Props> = ({ data, labels }) => {
             key={i}
             type="monotone"
             dataKey={label.prefName}
-            stroke="#82ca9d"
+            stroke={colors[i]}
           />
         ))}
     </LineChart>

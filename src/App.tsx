@@ -1,10 +1,14 @@
+import { DefaultLayout } from "./components/DefaultLayout";
+
 import Home from "@/pages/Home";
 
 function App() {
   return (
-    <div>
-      <Home />
-    </div>
+    <>
+      <DefaultLayout>
+        <Home />
+      </DefaultLayout>
+    </>
   );
 }
 

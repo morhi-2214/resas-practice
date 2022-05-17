@@ -45,11 +45,13 @@ const Home = () => {
 
   useEffect(() => {
     // TODO: なぜかpopulationsDataがundefinedでも走ってしまうので修正！
+    // if (!populationsData) return;
     console.log(populationsData);
-
     setPopulations(formatDataListForRechart(populationsData?.dataset));
     setSelectedPrefectures(populationsData?.checkedPrefectures);
   }, [populationsData]);
+
+  // console.log(populations);
 
   return (
     <>
