@@ -11,7 +11,7 @@ export default defineConfig({
   },
   base: "./",
   build: {
-    outDir: "../public",
+    outDir: "./public",
     emptyOutDir: true,
   },
   plugins: [vanillaExtractPlugin(), react()],
